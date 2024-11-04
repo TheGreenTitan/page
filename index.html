@@ -34,7 +34,7 @@
   <!-- JavaScript to initialize Stripe Elements and handle payment -->
   <script>
     // Initialize Stripe with your publishable key
-    const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
+    const stripe = Stripe('your-publishable-key-here'); // Replace with your actual key
     const elements = stripe.elements();
 
     // Define custom styling for Stripe Elements
@@ -62,6 +62,8 @@
       event.preventDefault();
 
       try {
+        console.log("Starting payment process...");
+
         // Step 1: Create a Payment Intent on the server
         const response = await fetch('/create-payment-intent', {
           method: 'POST',
@@ -73,11 +75,15 @@
           }),
         });
 
+        console.log("Fetch response received with status:", response.status);
+
         if (!response.ok) {
+          console.error('Fetch failed with status:', response.status);
           throw new Error('Failed to create Payment Intent');
         }
 
         const { clientSecret } = await response.json();
+        console.log("Client Secret received:", clientSecret);
 
         // Step 2: Confirm the Payment Intent with Stripe
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
@@ -91,12 +97,11 @@
         });
 
         if (error) {
-          // Handle any errors (e.g., display error message to the user)
           console.error('Payment error:', error.message);
           alert(error.message);
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          // Step 3: Redirect to the thank-you page after successful payment
-          window.location.href = '/thank-you.html'; // Update the path if needed
+          console.log("Payment succeeded, redirecting...");
+          window.location.href = '/thank-you.html';
         }
       } catch (error) {
         console.error('Error during payment process:', error.message);

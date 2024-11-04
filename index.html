@@ -51,7 +51,8 @@
           // Payment Intent created successfully.
           console.log('Payment Intent created:', data);
           form.querySelector('button').disabled = true;
-          alert('Payment successful!'); // Change this line
+          // Redirect to a thank you page
+          window.location.href = '/thank-you.html'; // Change this line
         }
       }
     });

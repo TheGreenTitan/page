@@ -7,11 +7,14 @@ app.use(express.static('.'));
 app.use(express.json());
 
 app.post('/create-payment', async (req, res) => {
-  const { token, name } = req.body;
+  const { token, name, email, phone, estimateNumber } = req.body;
 
   try {
     const customer = await stripe.customers.create({
       name: name,
+      email: email,
+      phone: phone,
+      metadata: { estimateNumber: estimateNumber },
     });
 
     const paymentMethod = await stripe.paymentMethods.create({

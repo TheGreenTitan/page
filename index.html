@@ -1,61 +1,108 @@
-<script>
-  // Initialize Stripe with your publishable key
-  const stripe = Stripe('your-publishable-key-here');
-  const elements = stripe.elements();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Form</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe Elements -->
+</head>
+<body>
+  <div class="form-container">
+    <h2>Secure Payment</h2>
+    <form id="payment-form">
+      <div class="input-group">
+        <label for="customer-name">Name</label>
+        <input type="text" id="customer-name" name="customerName" required>
+      </div>
+      <div class="input-group">
+        <label for="customer-email">Email</label>
+        <input type="email" id="customer-email" name="customerEmail" required>
+      </div>
+      <div class="input-group">
+        <label for="estimate-number">Estimate #</label>
+        <input type="text" id="estimate-number" name="estimateNumber" required>
+      </div>
+      <div class="input-group">
+        <label>Card Information</label>
+        <div id="card-element" class="card-element"></div>
+      </div>
+      <button type="submit">Pay Now</button>
+    </form>
+  </div>
 
-  // Define custom styling for Stripe Elements
-  const style = {
-    base: {
-      fontSize: '16px',
-      color: '#32325d',
-      '::placeholder': {
-        color: '#aab7c4',
-      },
-    },
-    invalid: {
-      color: '#fa755a',
-      iconColor: '#fa755a',
-    },
-  };
+  <!-- JavaScript to initialize Stripe Elements and handle payment -->
+  <script>
+    // Initialize Stripe with your publishable key
+    const stripe = Stripe('your-publishable-key-here'); // Replace with your actual key
+    const elements = stripe.elements();
 
-  // Create and mount the card element with custom styles
-  const cardElement = elements.create('card', { style });
-  cardElement.mount('#card-element');
-
-  // Handle form submission
-  const form = document.getElementById('payment-form');
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    // Step 1: Create a Payment Intent on the server
-    const { clientSecret } = await fetch('/create-payment-intent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        customerName: document.getElementById('customer-name').value,
-        customerEmail: document.getElementById('customer-email').value,
-        estimateNumber: document.getElementById('estimate-number').value,
-      }),
-    }).then(res => res.json());
-
-    // Step 2: Confirm the Payment Intent with Stripe
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-        billing_details: {
-          name: document.getElementById('customer-name').value,
-          email: document.getElementById('customer-email').value,
+    // Define custom styling for Stripe Elements
+    const style = {
+      base: {
+        fontSize: '16px',
+        color: '#32325d',
+        '::placeholder': {
+          color: '#aab7c4',
         },
       },
-    });
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a',
+      },
+    };
 
-    if (error) {
-      // Handle any errors (e.g., display error message to the user)
-      console.error('Payment error:', error.message);
-      alert(error.message);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      // Step 3: Redirect to the thank-you page after successful payment
-      window.location.href = '/thank-you.html'; // Update the path if needed
-    }
-  });
-</script>
+    // Create and mount the card element with custom styles
+    const cardElement = elements.create('card', { style });
+    cardElement.mount('#card-element');
+
+    // Handle form submission and payment confirmation
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      try {
+        // Step 1: Create a Payment Intent on the server
+        const response = await fetch('/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: document.getElementById('customer-name').value,
+            customerEmail: document.getElementById('customer-email').value,
+            estimateNumber: document.getElementById('estimate-number').value,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create Payment Intent');
+        }
+
+        const { clientSecret } = await response.json();
+
+        // Step 2: Confirm the Payment Intent with Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: document.getElementById('customer-name').value,
+              email: document.getElementById('customer-email').value,
+            },
+          },
+        });
+
+        if (error) {
+          // Handle any errors (e.g., display error message to the user)
+          console.error('Payment error:', error.message);
+          alert(error.message);
+        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+          // Step 3: Redirect to the thank-you page after successful payment
+          window.location.href = '/thank-you.html'; // Update the path if needed
+        }
+      } catch (error) {
+        console.error('Error during payment process:', error.message);
+        alert('There was an issue processing your payment. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

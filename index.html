@@ -31,9 +31,10 @@
     </form>
   </div>
 
-  <!-- JavaScript to initialize Stripe Elements and handle payment -->
+  <!-- JavaScript to initialize Stripe Elements -->
   <script>
-    const stripe = Stripe('your-publishable-key-here'); // Replace with your actual key
+    // Initialize Stripe with your publishable key
+    const stripe = Stripe('your-publishable-key-here');
     const elements = stripe.elements();
 
     // Define custom styling for Stripe Elements
@@ -54,51 +55,6 @@
     // Create and mount the card element with custom styles
     const cardElement = elements.create('card', { style });
     cardElement.mount('#card-element');
-
-    // Added form submission logic for payment handling
-    const form = document.getElementById('payment-form');
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      try {
-        // Step 1: Create a Payment Intent on the server
-        const response = await fetch('/create-payment-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            customerName: document.getElementById('customer-name').value,
-            customerEmail: document.getElementById('customer-email').value,
-            estimateNumber: document.getElementById('estimate-number').value,
-          }),
-        });
-
-        // Ensure the request was successful and extract the clientSecret
-        if (!response.ok) throw new Error('Payment Intent request failed.');
-        const { clientSecret } = await response.json();
-
-        // Step 2: Confirm the Payment Intent with Stripe
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: document.getElementById('customer-name').value,
-              email: document.getElementById('customer-email').value,
-            },
-          },
-        });
-
-        if (error) {
-          console.error('Payment error:', error.message);
-          alert(error.message);
-        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          // Redirect to the thank-you page after successful payment
-          window.location.href = '/thank-you.html';
-        }
-      } catch (error) {
-        console.error('Error during payment process:', error.message);
-        alert('There was an issue processing your payment. Please try again.');
-      }
-    });
   </script>
 </body>
 </html>

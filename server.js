@@ -12,11 +12,16 @@ app.use(express.json());
 app.post('/create-payment', async (req, res) => {
   const { token, name, email, phone, estimateNumber } = req.body;
 
+
+  console.log('Estimate Number:', estimateNumber);
+const existingCustomers = await stripe.customers.list({
+  metadata: { estimateNumber: estimateNumber },
+});
   try {
     // Search for an existing customer with the same estimateNumber in the metadata
     const existingCustomers = await stripe.customers.list({
-      metadata: { estimateNumber: estimateNumber },
-    });
+  metadata: { estimateNumber: estimateNumber },
+});
     
     // End of code to prevent duplicate customers
     // Monday, November 4, 2024, 12:12 AM CST

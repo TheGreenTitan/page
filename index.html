@@ -33,9 +33,27 @@
 
   <!-- JavaScript to initialize Stripe Elements -->
   <script>
+    // Initialize Stripe with your publishable key
     const stripe = Stripe('your-publishable-key-here');
     const elements = stripe.elements();
-    const cardElement = elements.create('card');
+
+    // Define custom styling for Stripe Elements
+    const style = {
+      base: {
+        fontSize: '16px',
+        color: '#32325d',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a',
+      },
+    };
+
+    // Create and mount the card element with custom styles
+    const cardElement = elements.create('card', { style });
     cardElement.mount('#card-element');
   </script>
 </body>

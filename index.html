@@ -16,7 +16,8 @@
   <form id="payment-form">
     <div id="card-element"></div>
     <button id="submit">Pay</button>
-    <div id="error-message"></div> </form>
+    <div id="error-message"></div>
+  </form>
   <script>
     const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
     const elements = stripe.elements();
@@ -48,6 +49,8 @@
           errorElement.textContent = data.error.message;
         } else {
           // Payment Intent created successfully.
+          form.querySelector('button').disabled = true;
+          errorElement.textContent = 'Payment successful!';
         }
       }
     });

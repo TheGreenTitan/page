@@ -1,5 +1,5 @@
 // Prevent duplicate customers by reusing existing customers with the same estimateNumber
-// Monday, November 4, 2024, 12:12 AM CST
+// Monday, November 4, 2024, 12:18 AM CST
 
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -12,25 +12,30 @@ app.use(express.json());
 app.post('/create-payment', async (req, res) => {
   const { token, name, email, phone, estimateNumber } = req.body;
 
-
-  console.log('Estimate Number:', estimateNumber);
-const existingCustomers = await stripe.customers.list({
-  metadata: { estimateNumber: estimateNumber },
-});
   try {
     // Search for an existing customer with the same estimateNumber in the metadata
     const existingCustomers = await stripe.customers.list({
-  metadata: { estimateNumber: estimateNumber },
-});
+      metadata: { estimateNumber: estimateNumber },
+    });
     
     // End of code to prevent duplicate customers
-    // Monday, November 4, 2024, 12:12 AM CST
+    // Monday, November 4, 2024, 12:18 AM CST
 
     let customer;
     if (existingCustomers.data.length > 0) {
       // Reuse the existing customer
       customer = existingCustomers.data[0];
       console.log('Reusing existing customer:', customer.id);
+
+      // Update customer information if it has changed
+      if (customer.name !== name || customer.email !== email || customer.phone !== phone) {
+        await stripe.customers.update(customer.id, {
+          name: name,
+          email: email,
+          phone: phone,
+        });
+        console.log('Updated customer information:', customer.id);
+      }
     } else {
       // Create a new customer
       customer = await stripe.customers.create({
@@ -55,7 +60,7 @@ const existingCustomers = await stripe.customers.list({
       amount: 5000, // $50 deposit
       currency: 'usd',
       customer: customer.id,
-      payment_method_data: { type: 'card', card: { token: token } }, // Corrected parameter
+      payment_method_data: { type: 'card', card: { token: token } },
       confirm: true,
     });
 

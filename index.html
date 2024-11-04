@@ -3,27 +3,17 @@
 <head>
   <title>Stripe Payment Integration</title>
   <script src="https://js.stripe.com/v3/"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
     #card-element {
       border: 1px solid #ccc;
       padding: 10px;
       width: 300px;
-    }
-    #payment-form input[type="text"],
-    #payment-form input[type="email"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
   <h1>Pay with Stripe</h1>
   <form id="payment-form">
-    <input type="text" id="name" placeholder="Jenny Rosen" required>
     <div id="card-element"></div>
     <button id="submit">Pay</button>
     <div id="error-message"></div>
@@ -46,14 +36,12 @@
       if (error) {
         errorElement.textContent = error.message;
       } else {
-        const name = document.getElementById('name').value;
-
-        // Send the token and name to your server
-        console.log('Sending data to server:', { token: token.id, name });
-        const response = await fetch('/create-payment', {
+        // Send the token to your server
+        console.log('Sending token to server:', token.id);
+        const response = await fetch('/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: token.id, name })
+          body: JSON.stringify({ token: token.id })
         });
 
         console.log('Response from server:', response);

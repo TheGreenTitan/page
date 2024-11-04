@@ -1,68 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Stripe Payment Integration</title>
-  <script src="https://js.stripe.com/v3/"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: sans-serif;
-    }
-    #payment-form {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    #payment-form div {
-      margin-bottom: 10px;
-    }
-    #payment-form label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    #payment-form input[type="text"],
-    #payment-form input[type="email"],
-    #payment-form input[type="tel"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      box-sizing: border-box;
-    }
-    #payment-form button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    #card-element {
-      height: 40px;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px 0 #e6ebf1;
-      -webkit-transition: box-shadow 150ms ease;
-      transition: box-shadow 150ms ease;
-    }
-    #card-element--focus {
-      box-shadow: 0 1px 3px 0 #cfd7df;
-    }
-    #card-element--invalid {
-      border-color: #fa755a;
-    }
-    #card-errors {
-      color: #fa755a;
-    }
-  </style>
-</head>
+  </head>
 <body>
   <div id="payment-form">
     <h1>MOVETHATSTUFF</h1>
-<H2>Move Deposit: Book Your Move</H2>
+    <h2>Move Deposit: Book Your Move</h2>
     <form>
       <div>
         <label for="name">Full Name</label>
@@ -111,7 +54,7 @@
 
         // Send the token and other form data to your server
         console.log('Sending data to server:', { token: token.id, name, phone, email, estimateNumber });
-        const response = await fetch('/create-payment', {
+        const response = await fetch('/create-payment', { // Updated fetch call
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: token.id, name, phone, email, estimateNumber })

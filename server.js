@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
@@ -12,23 +10,12 @@ app.post('/create-payment', async (req, res) => {
   const { token, name, email, phone, estimateNumber } = req.body;
 
   try {
-    const existingCustomers = await stripe.customers.list({
+    const customer = await stripe.customers.create({
+      name: name,
+      email: email,
+      phone: phone,
       metadata: { estimateNumber: estimateNumber },
     });
-    
-    let customer;
-    if (existingCustomers.data.length > 0) {
-      customer = existingCustomers.data[0];
-      console.log('Reusing existing customer:', customer.id);
-    } else {
-      customer = await stripe.customers.create({
-        name: name,
-        email: email,
-        phone: phone,
-        metadata: { estimateNumber: estimateNumber },
-      });
-      console.log('Created new customer:', customer.id);
-    }
 
     const paymentMethod = await stripe.paymentMethods.create({
       type: 'card',
@@ -43,7 +30,7 @@ app.post('/create-payment', async (req, res) => {
       amount: 5000, // $50 deposit
       currency: 'usd',
       customer: customer.id,
-      payment_method: paymentMethod.id,
+      payment_method: paymentMethod.id, // Note: This should be payment_method_data
       confirm: true,
     });
 

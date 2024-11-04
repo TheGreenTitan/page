@@ -7,17 +7,15 @@ app.use(express.static('.'));
 app.use(express.json());
 
 app.post('/create-payment-intent', async (req, res) => {
-  // const { token } = req.body; // Remove this line
-  console.log('Using test payment method type: card'); // Add this line
+  const { token } = req.body;
+  console.log('Received token:', token);
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: 1000, // This amount is in cents, equivalent to $10.00
       currency: 'usd',
-      automatic_payment_methods: {
-        enabled: true,
-      },
       payment_method_types: ['card'], // Use the 'card' payment method type
+      payment_method: token, // Use the token from the client
       confirm: true,
     });
 

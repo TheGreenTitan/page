@@ -20,12 +20,25 @@
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      const { error } = await stripe.createToken(cardElement);
+      const { token, error } = await stripe.createToken(cardElement);
 
       if (error) {
         console.error(error);
       } else {
-        // Token created successfully.
+        // Send the token to your server
+        const response = await fetch('/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token.id })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          console.error(data.error);
+        } else {
+          // Payment Intent created successfully.
+        }
       }
     });
   </script>

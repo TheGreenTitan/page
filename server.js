@@ -1,5 +1,5 @@
 // Prevent duplicate customers by reusing existing customers with the same estimateNumber
-// Monday, November 4, 2024, 12:18 AM CST
+// Monday, November 4, 2024, 01:27 AM CST
 
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -13,13 +13,12 @@ app.post('/create-payment', async (req, res) => {
   const { token, name, email, phone, estimateNumber } = req.body;
 
   try {
+    console.log('Estimate Number:', estimateNumber);
+
     // Search for an existing customer with the same estimateNumber in the metadata
     const existingCustomers = await stripe.customers.list({
       metadata: { estimateNumber: estimateNumber },
     });
-    
-    // End of code to prevent duplicate customers
-    // Monday, November 4, 2024, 12:18 AM CST
 
     let customer;
     if (existingCustomers.data.length > 0) {
@@ -60,7 +59,7 @@ app.post('/create-payment', async (req, res) => {
       amount: 5000, // $50 deposit
       currency: 'usd',
       customer: customer.id,
-      payment_method_data: { type: 'card', card: { token: token } },
+      payment_method_data: { type: 'card', card: { token: token } }, // Corrected parameter
       confirm: true,
     });
 
@@ -75,3 +74,6 @@ app.post('/create-payment', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+// End of code to prevent duplicate customers
+// Monday, November 4, 2024, 01:27 AM CST

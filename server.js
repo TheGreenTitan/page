@@ -1,47 +1,35 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
-const port = process.env.PORT || 3000;
+const stripe = require('stripe')('your-secret-key-here'); // Replace with your actual Stripe secret key
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-app.use(express.static('.'));
-app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
 
-app.post('/create-payment', async (req, res) => {
-  const { token, name, email, phone, estimateNumber } = req.body;
+// Endpoint to create a Payment Intent
+app.post('/create-payment-intent', async (req, res) => {
+  try {
+    // Retrieve data sent from the frontend
+    const { customerName, customerEmail, estimateNumber } = req.body;
 
-  try {
-    const customer = await stripe.customers.create({
-      name: name,
-      email: email,
-      phone: phone,
-      metadata: { estimateNumber: estimateNumber },
-    });
+    // Create a Payment Intent with Stripe
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 1000, // Replace with actual calculation or fixed amount (e.g., in cents)
+      currency: 'usd',
+      metadata: { customerName, customerEmail, estimateNumber },
+    });
 
-    const paymentMethod = await stripe.paymentMethods.create({
-      type: 'card',
-      card: { token: token },
-    });
-
-    await stripe.paymentMethods.attach(paymentMethod.id, {
-      customer: customer.id,
-    });
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 5000, // $50 deposit
-      currency: 'usd',
-      customer: customer.id,
-      payment_method: paymentMethod.id,
-      confirm: true,
-    });
-
-    console.log('Payment Intent created:', paymentIntent);
-    res.send({ clientSecret: paymentIntent.client_secret });
-  } catch (error) {
-    console.error('Error creating Payment Intent:', error);
-    res.status(500).send({ error: error.message });
-  }
+    // Send the clientSecret back to the client
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error('Error creating Payment Intent:', error);
+    res.status(500).json({ error: 'Failed to create Payment Intent' });
+  }
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

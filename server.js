@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.post('/create-payment-intent', async (req, res) => {
   // const { token } = req.body; // Remove this line
-  console.log('Using test token: tok_visa'); // Add this line
+  console.log('Using test payment method type: card'); // Add this line
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -17,7 +17,7 @@ app.post('/create-payment-intent', async (req, res) => {
       automatic_payment_methods: {
         enabled: true,
       },
-      payment_method: 'tok_visa', // Use the test token
+      payment_method_types: ['card'], // Use the 'card' payment method type
       confirm: true,
     });
 

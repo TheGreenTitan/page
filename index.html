@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>Stripe Payment Integration</title>
-  <script src="https://js.stripe.com/v3/"></script> </head>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
 <body>
   <h1>Pay with Stripe</h1>
   <form id="payment-form">
@@ -14,6 +15,19 @@
     const elements = stripe.elements();
     const cardElement = elements.create('card');
     cardElement.mount('#card-element');
+
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const { error } = await stripe.createToken(cardElement);
+
+      if (error) {
+        console.error(error);
+      } else {
+        // Token created successfully.
+      }
+    });
   </script>
 </body>
 </html>

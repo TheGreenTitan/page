@@ -1,5 +1,4 @@
-// Prevent duplicate customers by reusing existing customers with the same estimateNumber
-// Monday, November 4, 2024, 12:02 AM CST
+
 
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -9,6 +8,8 @@ const port = process.env.PORT || 3000;
 app.use(express.static('.'));
 app.use(express.json());
 
+// Prevent duplicate customers by reusing existing customers with the same estimateNumber
+// Monday, November 4, 2024, 12:02 AM CST
 app.post('/create-payment', async (req, res) => {
   const { token, name, email, phone, estimateNumber } = req.body;
 
@@ -18,9 +19,6 @@ app.post('/create-payment', async (req, res) => {
       metadata: { estimateNumber: estimateNumber },
     });
     
-    // End of code to prevent duplicate customers
-    // Monday, November 4, 2024, 12:02 AM CST
-
     let customer;
     if (existingCustomers.data.length > 0) {
       // Reuse the existing customer
@@ -36,6 +34,9 @@ app.post('/create-payment', async (req, res) => {
       });
       console.log('Created new customer:', customer.id);
     }
+
+    // End of code to prevent duplicate customers
+    // Monday, November 4, 2024, 12:02 AM CST
 
     const paymentMethod = await stripe.paymentMethods.create({
       type: 'card',

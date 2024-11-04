@@ -12,10 +12,9 @@ app.post('/create-payment-intent', async (req, res) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 1000, // This amount is in cents, equivalent to $10.00
+      amount: 1000,
       currency: 'usd',
-      payment_method_types: ['card'], // Use the 'card' payment method type
-      payment_method: token, // Use the token from the client
+      payment_method_data: { type: 'card', card: { token: token } }, // Updated line
       confirm: true,
     });
 

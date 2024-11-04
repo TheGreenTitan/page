@@ -2,8 +2,18 @@
 <html>
 <head>
   <title>Stripe Payment Integration</title>
-</head>
+  <script src="https://js.stripe.com/v3/"></script> </head>
 <body>
-  <h1>Hello from Railway!</h1>
+  <h1>Pay with Stripe</h1>
+  <form id="payment-form">
+    <div id="card-element"></div>
+    <button id="submit">Pay</button>
+  </form>
+  <script>
+    const stripe = Stripe(process.env.STRIPE_PUBLISHABLE_KEY);
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+  </script>
 </body>
 </html>

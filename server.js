@@ -20,6 +20,16 @@ app.post('/create-payment', async (req, res) => {
       // Reuse the existing customer
       customer = existingCustomers.data[0];
       console.log('Reusing existing customer:', customer.id);
+
+      // Update customer information if it has changed
+      if (customer.name !== name || customer.email !== email || customer.phone !== phone) {
+        await stripe.customers.update(customer.id, {
+          name: name,
+          email: email,
+          phone: phone,
+        });
+        console.log('Updated customer information:', customer.id);
+      }
     } else {
       // Create a new customer
       customer = await stripe.customers.create({

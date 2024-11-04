@@ -49,9 +49,9 @@
           errorElement.textContent = data.error.message;
         } else {
           // Payment Intent created successfully.
-          console.log('Payment Intent created:', data); // Add this line
+          console.log('Payment Intent created:', data);
           form.querySelector('button').disabled = true;
-          errorElement.textContent = 'Payment successful!';
+          alert('Payment successful!'); // Change this line
         }
       }
     });

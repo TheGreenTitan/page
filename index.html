@@ -26,10 +26,9 @@
     <div id="card-element"></div>
     <button id="submit">Pay</button>
     <div id="error-message"></div>
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="text" id="phone" placeholder="Phone" required>
+    <input type="text" id="name" placeholder="Full Name" required>
     <input type="email" id="email" placeholder="Email" required>
-    <input type="text" id="moveJobId" placeholder="Move Job ID" required>
+    <input type="tel" id="phone" placeholder="Phone" required> 
   </form>
   <script>
     const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
@@ -50,16 +49,15 @@
         errorElement.textContent = error.message;
       } else {
         const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
         const email = document.getElementById('email').value;
-        const moveJobId = document.getElementById('moveJobId').value;
+        const phone = document.getElementById('phone').value; 
 
         // Send the token and other form data to your server
-        console.log('Sending data to server:', { token: token.id, name, phone, email, moveJobId });
+        console.log('Sending data to server:', { token: token.id, name, email, phone });
         const response = await fetch('/create-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: token.id, name, phone, email, moveJobId })
+          body: JSON.stringify({ token: token.id, name, email, phone })
         });
 
         console.log('Response from server:', response);

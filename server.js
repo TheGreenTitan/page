@@ -6,19 +6,32 @@ const port = process.env.PORT || 3000;
 app.use(express.static('.'));
 app.use(express.json());
 
-app.post('/create-payment-intent', async (req, res) => {
-  const { token } = req.body;
-  console.log('Received token:', token);
+app.post('/create-payment', async (req, res) => {
+  const { token, name } = req.body;
 
   try {
+    const customer = await stripe.customers.create({
+      name: name,
+    });
+
+    const paymentMethod = await stripe.paymentMethods.create({
+      type: 'card',
+      card: { token: token },
+    });
+
+    await stripe.paymentMethods.attach(paymentMethod.id, {
+      customer: customer.id,
+    });
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 1000,
+      amount: 5000, // $50 deposit
       currency: 'usd',
-      payment_method_data: { type: 'card', card: { token: token } }, // Updated line
+      customer: customer.id,
+      payment_method: paymentMethod.id,
       confirm: true,
     });
 
-    console.log('Created Payment Intent:', paymentIntent);
+    console.log('Payment Intent created:', paymentIntent);
     res.send({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error('Error creating Payment Intent:', error);

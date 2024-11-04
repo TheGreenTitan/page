@@ -39,24 +39,6 @@
       border-radius: 3px;
       cursor: pointer;
     }
-    #card-element {
-      height: 40px;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px 0 #e6ebf1;
-      -webkit-transition: box-shadow 150ms ease;
-      transition: box-shadow 150ms ease;
-    }
-    #card-element--focus {
-      box-shadow: 0 1px 3px 0 #cfd7df;
-    }
-    #card-element--invalid {
-      border-color: #fa755a;
-    }
-    #card-errors {
-      color: #fa755a;
-    }
   </style>
 </head>
 <body>
@@ -87,7 +69,51 @@
   </div>
 
   <script>
-    // ... (JavaScript code remains the same) ...
+    const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    const form = document.getElementById('payment-form');
+    const errorElement = document.getElementById('error-message');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      errorElement.textContent = '';
+
+      const { token, error } = await stripe.createToken(cardElement);
+
+      if (error) {
+        errorElement.textContent = error.message;
+      } else {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const estimateNumber = document.getElementById('estimateNumber').value;
+
+        // Send the token and other form data to your server
+        console.log('Sending data to server:', { token: token.id, name, phone, email, estimateNumber });
+        const response = await fetch('/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token.id, name, phone, email, estimateNumber })
+        });
+
+        console.log('Response from server:', response);
+
+        const data = await response.json();
+
+        if (data.error) {
+          errorElement.textContent = data.error.message;
+        } else {
+          // Payment Intent created successfully.
+          console.log('Payment Intent created:', data);
+          form.querySelector('button').disabled = true;
+          // Redirect to a thank you page
+          window.location.href = '/thank-you.html';
+        }
+      }
+    });
   </script>
 </body>
 </html>

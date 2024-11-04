@@ -68,16 +68,16 @@
         <input type="text" id="name" placeholder="Jenny Rosen" required>
       </div>
       <div>
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="555-555-5555" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+      </div>
+      <div>
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="jennyrosen@example.com" required>
       </div>
       <div>
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" placeholder="555-555-5555" required>
-      </div>
-      <div>
         <label for="estimateNumber">Estimate #</label>
-        <input type="text" id="estimateNumber" placeholder="12345" required>
+        <input type="text" id="estimateNumber" placeholder="1234" pattern="[0-9]{4}" maxlength="4" required>
       </div>
       <div id="card-element"></div>
       <button id="submit">Pay</button>
@@ -104,16 +104,16 @@
         errorElement.textContent = error.message;
       } else {
         const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
         const estimateNumber = document.getElementById('estimateNumber').value;
 
         // Send the token and other form data to your server
-        console.log('Sending data to server:', { token: token.id, name, email, phone, estimateNumber });
+        console.log('Sending data to server:', { token: token.id, name, phone, email, estimateNumber });
         const response = await fetch('/create-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: token.id, name, email, phone, estimateNumber })
+          body: JSON.stringify({ token: token.id, name, phone, email, estimateNumber })
         });
 
         console.log('Response from server:', response);

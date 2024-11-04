@@ -3,20 +3,11 @@
 <head>
   <title>Stripe Payment Integration</title>
   <script src="https://js.stripe.com/v3/"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
     #card-element {
       border: 1px solid #ccc;
       padding: 10px;
       width: 300px;
-    }
-    #payment-form input[type="text"],
-    #payment-form input[type="email"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
     }
   </style>
 </head>
@@ -26,10 +17,6 @@
     <div id="card-element"></div>
     <button id="submit">Pay</button>
     <div id="error-message"></div>
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="text" id="phone" placeholder="Phone" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="text" id="moveJobId" placeholder="Move Job ID" required>
   </form>
   <script>
     const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
@@ -49,17 +36,12 @@
       if (error) {
         errorElement.textContent = error.message;
       } else {
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        const email = document.getElementById('email').value;
-        const moveJobId = document.getElementById('moveJobId').value;
-
-        // Send the token and other form data to your server
-        console.log('Sending data to server:', { token: token.id, name, phone, email, moveJobId });
-        const response = await fetch('/create-payment', {
+        // Send the token to your server
+        console.log('Sending token to server:', token.id);
+        const response = await fetch('/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: token.id, name, phone, email, moveJobId })
+          body: JSON.stringify({ token: token.id })
         });
 
         console.log('Response from server:', response);

@@ -3,7 +3,7 @@
 <head>
   <title>Stripe Payment Integration</title>
   <script src="https://js.stripe.com/v3/"></script>
-  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
     #card-element {
       border: 1px solid #ccc;
       padding: 10px;
@@ -37,14 +37,14 @@
         errorElement.textContent = error.message;
       } else {
         // Send the token to your server
-        console.log('Sending token to server:', token.id); // Add this line
+        console.log('Sending token to server:', token.id);
         const response = await fetch('/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: token.id })
         });
 
-        console.log('Response from server:', response); // Add this line
+        console.log('Response from server:', response);
 
         const data = await response.json();
 

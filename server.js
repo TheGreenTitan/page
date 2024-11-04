@@ -7,24 +7,24 @@ app.use(express.static('.'));
 app.use(express.json());
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { token } = req.body;
-  console.log('Received token:', token); // Add this line
+  // const { token } = req.body; // Remove this line
+  console.log('Using test token: tok_visa'); // Add this line
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 500.00, // Replace with your actual amount
+      amount: 1000, // This amount is in cents, equivalent to $10.00
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
       },
-      payment_method: token, // Use the token from the client
-      confirm: true, // Automatically confirm the Payment Intent
+      payment_method: 'tok_visa', // Use the test token
+      confirm: true,
     });
 
-    console.log('Created Payment Intent:', paymentIntent); // Add this line
+    console.log('Created Payment Intent:', paymentIntent);
     res.send({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    console.error('Error creating Payment Intent:', error); // Add this line
+    console.error('Error creating Payment Intent:', error);
     res.status(500).send({ error: error.message });
   }
 });

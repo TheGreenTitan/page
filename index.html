@@ -37,11 +37,14 @@
         errorElement.textContent = error.message;
       } else {
         // Send the token to your server
+        console.log('Sending token to server:', token.id); // Add this line
         const response = await fetch('/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: token.id })
         });
+
+        console.log('Response from server:', response); // Add this line
 
         const data = await response.json();
 
@@ -52,7 +55,7 @@
           console.log('Payment Intent created:', data);
           form.querySelector('button').disabled = true;
           // Redirect to a thank you page
-          window.location.href = '/thank-you.html'; // Change this line
+          window.location.href = '/thank-you.html';
         }
       }
     });

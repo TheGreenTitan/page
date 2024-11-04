@@ -3,13 +3,20 @@
 <head>
   <title>Stripe Payment Integration</title>
   <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    #card-element {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 300px;
+    }
+  </style>
 </head>
 <body>
   <h1>Pay with Stripe</h1>
   <form id="payment-form">
     <div id="card-element"></div>
     <button id="submit">Pay</button>
-  </form>
+    <div id="error-message"></div> </form>
   <script>
     const stripe = Stripe('pk_live_51QG30TDeoUFEtnpGSyC3sleYjIyTs7IdSAiA37bTiTzO00Y6EkD8u7h1wRmYKflPw6r6YUfFohoOuEPTOxULEl7A00r55A44J5');
     const elements = stripe.elements();
@@ -17,13 +24,16 @@
     cardElement.mount('#card-element');
 
     const form = document.getElementById('payment-form');
+    const errorElement = document.getElementById('error-message');
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      errorElement.textContent = '';
 
       const { token, error } = await stripe.createToken(cardElement);
 
       if (error) {
-        console.error(error);
+        errorElement.textContent = error.message;
       } else {
         // Send the token to your server
         const response = await fetch('/create-payment-intent', {
@@ -35,7 +45,7 @@
         const data = await response.json();
 
         if (data.error) {
-          console.error(data.error);
+          errorElement.textContent = data.error.message;
         } else {
           // Payment Intent created successfully.
         }

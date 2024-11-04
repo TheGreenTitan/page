@@ -18,7 +18,7 @@
     <button id="submit">Pay</button>
     <div id="error-message"></div> </form>
   <script>
-    const stripe = Stripe('pk_live_51QG30TDeoUFEtnpGSyC3sleYjIyTs7IdSAiA37bTiTzO00Y6EkD8u7h1wRmYKflPw6r6YUfFohoOuEPTOxULEl7A00r55A44J5');
+    const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
     const elements = stripe.elements();
     const cardElement = elements.create('card');
     cardElement.mount('#card-element');

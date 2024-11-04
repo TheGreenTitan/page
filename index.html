@@ -1,118 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Stripe Payment Integration</title>
-  <script src="https://js.stripe.com/v3/"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: sans-serif;
-    }
-    #payment-form {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    #payment-form div {
-      margin-bottom: 10px;
-    }
-    #payment-form label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    #payment-form input[type="text"],
-    #payment-form input[type="email"],
-    #payment-form input[type="tel"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      box-sizing: border-box;
-    }
-    #payment-form button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Stripe Payment Integration</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css"> <!-- Link to external CSS -->
 </head>
 <body>
-  <div id="payment-form">
-    <h1>Pay with Stripe</h1>
-    <form>
-      <div>
-        <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="Jenny Rosen" required>
-      </div>
-      <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="jennyrosen@example.com" required>
-      </div>
-      <div>
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" placeholder="555-555-5555" required>
-      </div>
-      <div>
-        <label for="estimateNumber">Estimate #</label>
-        <input type="text" id="estimateNumber" placeholder="12345" required>
-      </div>
-      <div id="card-element"></div>
-      <button id="submit">Pay</button>
-      <div id="error-message"></div>
-    </form>
-  </div>
+  <div id="payment-form">
+    <h1>Pay with Stripe</h1>
+    <form>
+      <div>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Jenny Rosen" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="jennyrosen@example.com" required>
+      </div>
+      <div>
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="555-555-5555" required>
+      </div>
+      <div>
+        <label for="estimateNumber">Estimate #</label>
+        <input type="text" id="estimateNumber" placeholder="12345" required>
+      </div>
+      <div id="card-element"></div>
+      <button id="submit">Pay</button>
+      <div id="error-message"></div>
+    </form>
+  </div>
 
-  <script>
-    const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
-    const elements = stripe.elements();
-    const cardElement = elements.create('card');
-    cardElement.mount('#card-element');
+  <script>
+    const stripe = Stripe('pk_test_51QG30TDeoUFEtnpGTHnpeZvjSl9FKGX9WBPRhP2UGvWD4EGIYAgMsB37R2cr5hkObnfwmP3fh7yfowZJNoItEfbE0080d4RHZp');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
 
-    const form = document.getElementById('payment-form');
-    const errorElement = document.getElementById('error-message');
+    const form = document.getElementById('payment-form');
+    const errorElement = document.getElementById('error-message');
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      errorElement.textContent = '';
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      errorElement.textContent = '';
 
-      const { token, error } = await stripe.createToken(cardElement);
+      const { token, error } = await stripe.createToken(cardElement);
 
-      if (error) {
-        errorElement.textContent = error.message;
-      } else {
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-        const estimateNumber = document.getElementById('estimateNumber').value;
+      if (error) {
+        errorElement.textContent = error.message;
+      } else {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const estimateNumber = document.getElementById('estimateNumber').value;
 
-        // Send the token and other form data to your server
-        console.log('Sending data to server:', { token: token.id, name, email, phone, estimateNumber });
-        const response = await fetch('/create-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: token.id, name, email, phone, estimateNumber })
-        });
+        // Send the token and other form data to your server
+        console.log('Sending data to server:', { token: token.id, name, email, phone, estimateNumber });
+        const response = await fetch('/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token.id, name, email, phone, estimateNumber })
+        });
 
-        console.log('Response from server:', response);
+        console.log('Response from server:', response);
 
-        const data = await response.json();
+        const data = await response.json();
 
-        if (data.error) {
-          errorElement.textContent = data.error.message;
-        } else {
-          // Payment Intent created successfully.
-          console.log('Payment Intent created:', data);
-          form.querySelector('button').disabled = true;
-          // Redirect to a thank you page
-          window.location.href = '/thank-you.html';
-        }
-      }
-    });
-  </script>
+        if (data.error) {
+          errorElement.textContent = data.error.message;
+        } else {
+          // Payment Intent created successfully.
+          console.log('Payment Intent created:', data);
+          form.querySelector('button').disabled = true;
+          // Redirect to a thank you page
+          window.location.href = '/thank-you.html';
+        }
+      }
+    });
+  </script>
 </body>
 </html>
